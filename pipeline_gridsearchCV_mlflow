@@ -7,6 +7,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 
 
+mlflow.sklearn.autolog()
+
 numeric_features = X.columns.to_list()
 numeric_transformer = Pipeline(steps=[
     ('imputer', SimpleImputer(strategy='median')),
@@ -19,13 +21,16 @@ preprocessor = ColumnTransformer(
         
         
 clf = Pipeline(steps=[('preprocessor', preprocessor),
-                      ('logreg', LogisticRegression())
+                      ('classifier', LogisticRegression())
                   ]) 
 
-param_grid={'logreg__C': np.logspace(-4, 4, 4)}
+param_grid={'classifier__penalty' : ['l1', 'l2'],
+    'classifier__C' : np.logspace(-4, 4, 20),
+    'classifier__solver' : ['liblinear']}
 
 search = GridSearchCV(clf, param_grid, n_jobs=-1)
 # clf = clf.fit(X,Y)
-search.fit(X, Y)
+with mlflow.start_run() as run:
+    search.fit(X, Y)
 print("Best parameter (CV score=%0.3f):" % search.best_score_)
 print(search.best_params_)
