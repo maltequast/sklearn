@@ -35,9 +35,9 @@ def objective(trial):
     
     return np.mean(cross_val_score(clf, X, Y.values.ravel(), cv=8))
 
-    mlflc = MLflowCallback(
-    tracking_uri="/home/malte/PycharmProjects/jupyter/mlruns/",
-    metric_name='my metric score',
+mlflc = MLflowCallback(
+tracking_uri="/home/malte/PycharmProjects/jupyter/mlruns/",
+metric_name='my metric score',
 )
 
 
