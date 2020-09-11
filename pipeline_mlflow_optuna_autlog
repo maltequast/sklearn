@@ -1,0 +1,50 @@
+import mlflow
+import numpy as np
+import optuna
+from optuna.integration.mlflow import MLflowCallback
+from optuna.integration import SkoptSampler
+import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import cross_val_score
+
+numeric_features = X.columns.to_list()
+numeric_transformer = Pipeline(steps=[
+('imputer', SimpleImputer(strategy='median')),
+('scaler', StandardScaler())])
+
+preprocessor = ColumnTransformer(
+transformers=[
+    ('num', numeric_transformer, numeric_features),
+])
+
+
+clf = Pipeline(steps=[('preprocessor', preprocessor),
+                  ('classifier', LogisticRegression())
+              ])
+
+def objective(trial):
+    params={
+        'classifier__C': trial.suggest_int('classifier__C', 0, 50)
+    }
+    
+    clf.set_params(**params)
+    
+    return np.mean(cross_val_score(clf, X, Y.values.ravel(), cv=8))
+
+
+
+mlflow.set_tracking_uri("/home/malte/PycharmProjects/jupyter/mlruns/")
+mlflow.set_experiment("mlflow_optuna_autlog")
+
+mlflow.sklearn.autolog()
+
+
+study = optuna.create_study()
+
+with mlflow.start_run() as run:
+    study.optimize(objective, n_trials=20)
