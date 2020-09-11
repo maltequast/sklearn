@@ -1,0 +1,35 @@
+from sklearn.base import TransformerMixin, BaseEstimator
+class DateTransformer(TransformerMixin, BaseEstimator):
+    """Extracts features from datetime column
+    
+    Returns:
+      hour: hour
+      day: Between 1 and the number of days in the month
+      month: Between 1 and 12 inclusive.
+      year: four-digit year
+      weekday: day of the week as an integer. Mon=0 and Sun=6
+   """
+def fit(self, x, y=None):
+        return self
+def transform(self, x, y=None):
+        result = pd.DataFrame(x, columns=['date_hour'])
+        result['hour'] = [dt.hour for dt in result['date_hour']]
+        result['day'] = [dt.day for dt in result['date_hour']]
+        result['month'] = [dt.month for dt in result['date_hour']]
+        result['year'] = [dt.year for dt in result['date_hour']]
+        result['weekday'] = [dt.weekday() for dt in 
+                             result['date_hour']]
+        return result[['hour', 'day', 'month', 'year', 'weekday']]
+    
+def get_feature_names(self):
+        return ['hour','day', 'month', 'year', 'weekday']
+        
+
+## for two or more dates, name differentiation is necessary
+
+transformers=[(‘date_1’, DateTransformer, [‘start_date’])
+ct = ColumnTransformer(
+          transformers=[
+              (‘date_1’, DateTransformer, [‘start_date’]),
+              (‘date_2’, DateTransformer, [‘end_date’])
+          ])
