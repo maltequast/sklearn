@@ -11,22 +11,22 @@ from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import cross_val_score
 
-def objective(trial):
-    numeric_features = X.columns.to_list()
-    numeric_transformer = Pipeline(steps=[
-    ('imputer', SimpleImputer(strategy='median')),
-    ('scaler', StandardScaler())])
+numeric_features = X.columns.to_list()
+numeric_transformer = Pipeline(steps=[
+('imputer', SimpleImputer(strategy='median')),
+('scaler', StandardScaler())])
 
-    preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', numeric_transformer, numeric_features),
-    ])
-        
-        
-    clf = Pipeline(steps=[('preprocessor', preprocessor),
-                      ('classifier', LogisticRegression())
-                  ])
-    
+preprocessor = ColumnTransformer(
+transformers=[
+    ('num', numeric_transformer, numeric_features),
+])
+
+
+clf = Pipeline(steps=[('preprocessor', preprocessor),
+                  ('classifier', LogisticRegression())
+              ])
+
+def objective(trial):
     params={
         'classifier__C': trial.suggest_int('classifier__C', 0, 20)
     }
@@ -44,3 +44,5 @@ metric_name='my metric score',
 #sampler = SkoptSampler()
 study = optuna.create_study(study_name='iris_optuna_logreg') #, sampler= sampler)
 study.optimize(objective, n_trials=10, callbacks=[mlflc])
+# clf.set_params(**study.best_params)
+# clf.fit(X, Y)
