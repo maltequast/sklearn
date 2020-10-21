@@ -81,7 +81,7 @@ metric_name='accuracy',
 
 
 #sampler = SkoptSampler()
-study = optuna.create_study(study_name='xgboost_metrics')
+study = optuna.create_study(study_name='xgboost_metrics', direction='maximize')
 study.optimize(objective, n_trials=30, callbacks=[mlflc])
 # clf.set_params(**study.best_params)
 # clf.fit(X, Y)
