@@ -49,7 +49,7 @@ fc_parameters = {
 
 
 p = Pipeline([
-      ('fresh', extractor(fc_parameters, 0)),
+      ('fresh', featureExtractor(fc_parameters, 0)),
       ('imputer', SimpleImputer(strategy='median')),
       ('scaler', StandardScaler()),
       ('classifier', RandomForestClassifier())
